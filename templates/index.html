@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cloud To-Do | Task Manager</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <div class="cloud-icon" aria-hidden="true">☁</div>
+      <p class="eyebrow">CLOUD COMPUTING MINI PROJECT</p>
+      <h1>My To-Do List</h1>
+      <p class="subtitle">A simple way to plan your day, one task at a time.</p>
+    </header>
+
+    <section class="stats" aria-label="Task summary">
+      <div class="stat"><span class="stat-number">{{ total }}</span><span class="stat-label">Total</span></div>
+      <div class="stat"><span class="stat-number">{{ pending_count }}</span><span class="stat-label">Pending</span></div>
+      <div class="stat"><span class="stat-number">{{ completed_count }}</span><span class="stat-label">Completed</span></div>
+    </section>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="messages">
+          {% for category, message in messages %}
+            <p class="flash {{ category }}">{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <section class="panel">
+      <h2>Add a new task</h2>
+      <form class="add-form" action="{{ url_for('add_task') }}" method="post">
+        <label class="visually-hidden" for="title">Task description</label>
+        <input id="title" name="title" type="text" maxlength="200" placeholder="e.g. Complete cloud computing report" required>
+        <button type="submit">Add task <span aria-hidden="true">+</span></button>
+      </form>
+    </section>
+
+    <section class="task-section">
+      <div class="section-heading">
+        <h2>Your tasks</h2>
+        <span class="count-pill">{{ total }} item{% if total != 1 %}s{% endif %}</span>
+      </div>
+      {% if tasks %}
+        <ul class="task-list">
+          {% for task in tasks %}
+            <li class="task {% if task.completed %}is-complete{% endif %}">
+              <form action="{{ url_for('toggle_task', task_id=task.id) }}" method="post">
+                <button class="check-button" type="submit" aria-label="{% if task.completed %}Mark pending{% else %}Mark complete{% endif %}">
+                  {% if task.completed %}✓{% else %}○{% endif %}
+                </button>
+              </form>
+              <span class="task-title">{{ task.title }}</span>
+              <form action="{{ url_for('delete_task', task_id=task.id) }}" method="post">
+                <button class="delete-button" type="submit" aria-label="Delete {{ task.title }}">Delete</button>
+              </form>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="empty-state">
+          <div class="empty-icon" aria-hidden="true">✦</div>
+          <h3>Nothing on your list yet</h3>
+          <p>Add your first task above to get started.</p>
+        </div>
+      {% endif %}
+    </section>
+
+    <footer>
+      <span>Built with Flask</span><span class="dot">•</span><span>Cloud-ready demo</span>
+    </footer>
+  </main>
+</body>
+</html>
