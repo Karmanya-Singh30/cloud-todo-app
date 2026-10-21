@@ -1,13 +1,5 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Cloud To-Do | Task Manager</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-  <main class="page">
+{% extends "base.html" %}
+{% block content %}
     <header class="hero">
       <div class="cloud-icon" aria-hidden="true">☁</div>
       <p class="eyebrow">CLOUD COMPUTING MINI PROJECT</p>
@@ -23,7 +15,7 @@
 
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
-        <div class="messages">
+        <div class="messages" role="status">
           {% for category, message in messages %}
             <p class="flash {{ category }}">{{ message }}</p>
           {% endfor %}
@@ -34,8 +26,9 @@
     <section class="panel">
       <h2>Add a new task</h2>
       <form class="add-form" action="{{ url_for('add_task') }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <label class="visually-hidden" for="title">Task description</label>
-        <input id="title" name="title" type="text" maxlength="200" placeholder="e.g. Complete cloud computing report" required>
+        <input id="title" name="title" type="text" maxlength="{{ max_length }}" placeholder="e.g. Complete cloud computing report" required{% if not editing_id %} autofocus{% endif %}>
         <button type="submit">Add task <span aria-hidden="true">+</span></button>
       </form>
     </section>
@@ -45,19 +38,37 @@
         <h2>Your tasks</h2>
         <span class="count-pill">{{ total }} item{% if total != 1 %}s{% endif %}</span>
       </div>
+      {% if total %}
+        <div class="progress" role="progressbar" aria-label="Tasks completed" aria-valuemin="0" aria-valuemax="{{ total }}" aria-valuenow="{{ completed_count }}">
+          <span style="width: {{ (completed_count / total * 100) | round | int }}%"></span>
+        </div>
+      {% endif %}
       {% if tasks %}
         <ul class="task-list">
           {% for task in tasks %}
             <li class="task {% if task.completed %}is-complete{% endif %}">
               <form action="{{ url_for('toggle_task', task_id=task.id) }}" method="post">
-                <button class="check-button" type="submit" aria-label="{% if task.completed %}Mark pending{% else %}Mark complete{% endif %}">
-                  {% if task.completed %}✓{% else %}○{% endif %}
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="check-button" type="submit" aria-label="{% if task.completed %}Mark '{{ task.title }}' pending{% else %}Mark '{{ task.title }}' complete{% endif %}">
+                  {% if task.completed %}✓{% endif %}
                 </button>
               </form>
-              <span class="task-title">{{ task.title }}</span>
-              <form action="{{ url_for('delete_task', task_id=task.id) }}" method="post">
-                <button class="delete-button" type="submit" aria-label="Delete {{ task.title }}">Delete</button>
-              </form>
+              {% if task.id == editing_id %}
+                <form class="edit-form" action="{{ url_for('edit_task', task_id=task.id) }}" method="post">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <label class="visually-hidden" for="edit-{{ task.id }}">Edit task</label>
+                  <input id="edit-{{ task.id }}" name="title" type="text" maxlength="{{ max_length }}" value="{{ task.title }}" required autofocus>
+                  <button class="save-button" type="submit">Save</button>
+                  <a class="text-button" href="{{ url_for('index') }}">Cancel</a>
+                </form>
+              {% else %}
+                <span class="task-title">{{ task.title }}</span>
+                <a class="text-button" href="{{ url_for('index', edit=task.id) }}" aria-label="Edit {{ task.title }}">Edit</a>
+                <form action="{{ url_for('delete_task', task_id=task.id) }}" method="post" onsubmit="return confirm('Delete this task?');">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button class="text-button delete-button" type="submit" aria-label="Delete {{ task.title }}">Delete</button>
+                </form>
+              {% endif %}
             </li>
           {% endfor %}
         </ul>
@@ -69,10 +80,4 @@
         </div>
       {% endif %}
     </section>
-
-    <footer>
-      <span>Built with Flask</span><span class="dot">•</span><span>Cloud-ready demo</span>
-    </footer>
-  </main>
-</body>
-</html>
+{% endblock %}

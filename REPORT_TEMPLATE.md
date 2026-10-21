@@ -12,7 +12,7 @@
 - **Submission date:** [Date]
 
 ## 1. Abstract
-This project implements a simple task-management web application using Python Flask, HTML, CSS and SQLite. Users can add tasks, mark tasks as complete or pending, and delete tasks. GitHub is used for version control, GitHub Actions runs automated checks, and Render is used as the cloud deployment platform. The project demonstrates a basic web application deployment workflow.
+This project implements a simple task-management web application using Python Flask, HTML, CSS and SQLite. Users can add, edit, complete and delete tasks. GitHub is used for version control, GitHub Actions runs automated checks, and Render is used as the cloud deployment platform. The project demonstrates a basic web application deployment workflow.
 
 ## 2. Problem Statement
 People need a simple way to maintain a list of tasks and track their completion. The project provides a browser-based task list that can be accessed through a hosted URL after deployment.
@@ -43,15 +43,18 @@ The browser sends HTTP requests to the Flask application. Flask processes task a
 
 ## 6. Main Features
 - Add a task
+- Edit a task's title
 - Mark a task complete or pending
-- Delete a task
-- Display total, pending and completed counts
-- Health endpoint at `/health`
+- Delete a task (with confirmation)
+- Display total, pending and completed counts with a progress bar
+- Input validation, success/error messages and 400/404 error pages
+- CSRF protection on all forms
+- Health endpoint at `/health` that also checks the database
 
 ## 7. Implementation
 Describe the key files:
 - `app.py`: Flask routes, SQLite database setup and task operations.
-- `templates/index.html`: HTML layout.
+- `templates/base.html`, `index.html`, `error.html`: shared layout, task page and error page.
 - `static/style.css`: page styling and responsive layout.
 - `tests/test_app.py`: automated tests.
 - `.github/workflows/ci.yml`: continuous integration workflow.
