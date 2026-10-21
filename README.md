@@ -161,4 +161,4 @@ Locally, tasks persist in `tasks.db` across restarts (verified). On Render's **f
 - No due dates, priorities, search or filters.
 
 ## Mini-project report
-Use `REPORT_TEMPLATE.md` as the report outline. Screenshots of the app running locally are in `docs/screenshots/`. Add your own details, a screenshot of GitHub Actions passing, your real GitHub URL and your real deployed URL. Do not claim a deployment succeeded until you have tested the live URL.
+The completed report is [`REPORT.md`](REPORT.md). `REPORT_TEMPLATE.md` is the original outline. Screenshots of the app running locally are in `docs/screenshots/`. Add your own details, a screenshot of GitHub Actions passing, your real GitHub URL and your real deployed URL. Do not claim a deployment succeeded until you have tested the live URL.
